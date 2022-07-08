@@ -52,6 +52,9 @@ class FrameworkShell(cmd.Cmd):
         'Exit the development mode'
         self.setting.development_mode = False
         self.prompt = "({}) > ".format(Str("framework").red())
+    def do_init(self,arg):
+        'Install required node_modules'
+        lib.command.init(arg)
     # list all exploits
     def do_list(self, arg):
         'List all exploits'

@@ -3,6 +3,17 @@ from importlib.resources import path
 import os, glob, yaml, shutil, time
 from .exploit import Exploit
 from .setting import Setting
+
+# The prefix name of temp folder
+NORMAL_TEMP_FOLDER_PREFIX = 'exploit-framework-normal-tmp-'
+DEVMODE_TEMP_FOLDER_PREFIX = 'exploit-framework-dev-tmp-'
+
+def init(arg):
+    oldpwd = os.getcwd()
+    os.chdir('configurations')
+    os.system('npm install')
+    os.chdir(oldpwd)
+
 def search(arg, setting):
     try:
         oldpwd = os.getcwd()
@@ -51,6 +62,7 @@ def load(arg, setting):
             else:
                 raise Exception("Exploit not existed")
         exploit = Exploit(arg, exploit_path)
+        print(exploit.config['description'])
     except Exception as e:
         print(e)
         exploit = None
@@ -98,25 +110,26 @@ def importConfig(arg, exploit):
     return exploit
 
 def run(exploit, setting):
-    # Check
+    # Check exploit
     if (exploit is None):
         print ('No Exploit loaded')
+    elif not os.path.exists('configurations/node_modules') or not os.path.exists('configurations/package-lock.json'):
+        print ('No initialized node_modules, please run command `init`')
     else:
     # Create folder in /tmp
         temp = '/tmp'
-        directory_name = exploit.name
         if setting.development_mode:
-            exploit_path = os.path.join('exploits/', directory_name)
-            path = os.path.join(temp, directory_name+"-dev")
+            exploit_path = os.path.join('exploits/', exploit.name)
+            path = os.path.join(temp, DEVMODE_TEMP_FOLDER_PREFIX+exploit.name)
         else:
-            exploit_path = os.path.join(setting.path_to_database, directory_name)
-            path = os.path.join(temp, directory_name)
+            exploit_path = os.path.join(setting.path_to_database, exploit.name)
+            path = os.path.join(temp, NORMAL_TEMP_FOLDER_PREFIX+exploit.name)
         oldpwd = os.getcwd()
         if not os.path.exists(path):
             os.mkdir(path)
-        elif not setting.development_mode: 
-            shutil.rmtree(path)
-            os.mkdir(path)
+        # elif not setting.development_mode: 
+        #     shutil.rmtree(path)
+        #     os.mkdir(path)
     # Create three sub directories
         subdirectories = ["contracts", "scripts", "contracts/interfaces"]
         for subdirectory in subdirectories:
@@ -125,13 +138,17 @@ def run(exploit, setting):
         configFiles = ['hardhat.config.ts', 'package.json', 'tsconfig.json']
         for configFile in configFiles:
             shutil.copyfile("configurations/"+configFile, os.path.join(path,configFile))
+    # Create a softlink to node_modules
+        os.chdir(path)
+        #os.symlink(oldpwd+'/configurations/node_modules', 'node_modules')
+        os.system('ln -s '+oldpwd+'/configurations/node_modules'+ ' node_modules')
+        os.chdir(oldpwd)
     # Copy required interfaces to contracts/interfaces
         interfaces = exploit.config['interfaces']
         if interfaces is not None:
             for interface in interfaces:
                 shutil.copyfile('contracts/interfaces/' + interface, os.path.join(path,'contracts/interfaces/', interface))
     # Copy attack.ts to scripts and exploit.sol to contracts.
-        print(exploit_path)
         shutil.copyfile(os.path.join(exploit_path, 'Attack.ts'), os.path.join(path,'scripts', 'Attack.ts'))
         for file_path in glob.glob(os.path.join(exploit_path, '**', '*.sol'), recursive=True):
             dst_path = os.path.join(path, "contracts/" + os.path.basename(file_path))
@@ -141,20 +158,20 @@ def run(exploit, setting):
             yaml.dump(exploit.config, f)
     # Run exploit
         os.chdir(path)
-        os.system("npm install")
-        os.system("npx hardhat compile")
         os.system("npx hardhat run scripts/attack.ts")
     # Return results
 
     # Delete this folder.
-        if not setting.development_mode:
-            shutil.rmtree(path) 
-        os.chdir(oldpwd)
+        # if not setting.development_mode:
+            # shutil.rmtree(path) 
         # if not setting.development_mode:
         #     shutil.rmtree(os.path.join(oldpwd,"exploits",exploit.name))
+        os.chdir(oldpwd)
 
 def close(exploit, setting):
     if not setting.development_mode:
-        if exploit:
-            if os.path.exists('/tmp'+ exploit.name):
-                shutil.rmtree('/tmp'+ exploit.name)
+        oldpwd = os.getcwd()
+        os.chdir('/tmp')
+        for match in glob.iglob(NORMAL_TEMP_FOLDER_PREFIX+"*"):
+            shutil.rmtree(match)
+        os.chdir(oldpwd)
