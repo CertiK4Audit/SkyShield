@@ -1,10 +1,12 @@
+from xml.dom.expatbuilder import FragmentBuilderNS
 import yaml
 class Setting:
-    path_to_database = None
     development_mode = False
-    
-    def __init__(self):
+
+    def readNetworkURL(self, network):
         with open('setting.yml') as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
-            #print(data)
-            self.path_to_database = data['path']['database']
+            return data['networks'][network]['url']
+    
+    def __init__(self):
+        self.development_mode = True

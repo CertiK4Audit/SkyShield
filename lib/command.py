@@ -10,7 +10,7 @@ NORMAL_TEMP_FOLDER_PREFIX = 'exploit-framework-normal-tmp-'
 DEVMODE_TEMP_FOLDER_PREFIX = 'exploit-framework-dev-tmp-'
 
 # Variables
-POC_GITHUB = "git@github.com:CertiK-Yuannan/PoC_Template.git"
+POC_GITHUB = "https://github.com/CertiK-Yuannan/PoC_Template.git"
 POC_LIST_DIR = "./PoC_Template/template_list.csv"
 EXPLOITS_PATH = "./exploits/"
 
@@ -30,7 +30,7 @@ def init_installPackage():
 def init_loadPoC():
     try:
         print("Downloading PoCs ....")
-        os.system("git clone" + " " + POC_GITHUB)
+        os.system("git clone -b main" + " " + POC_GITHUB)
     except:
         print("Unable to download PoCs")
 
@@ -55,14 +55,11 @@ def load(arg, setting):
         prePwd = os.getcwd()
         # checkout to given branch
         os.chdir(EXPLOITS_PATH)
-        os.system("git clone -b" + " " + arg + " " + POC_GITHUB)
+        os.system("git clone -b" + " " + arg + " " + POC_GITHUB + " "+arg)
 
-        ## if it has been downloaded
-        try:
-            os.rename("PoC_Template", arg)
-        except Exception as e:
-            print(e)
         os.chdir(prePwd) 
+        if not os.path.exists(os.path.join(EXPLOITS_PATH, arg)):
+            raise Exception("Network problem or PoC not found")
 
         #set parameters
         exploit = Exploit(arg, EXPLOITS_PATH + arg)
@@ -74,38 +71,39 @@ def load(arg, setting):
         print('Exception occurred when loading config file')
     return exploit
 
-
 def showParameters(exploit, setting):
     try:
-        exploit.show_parameters()
+        exploit.showParameters()
     except:
         print("No Exploit loaded")
 
-def set(arg, exploit, pocName):
+def useNetworks(arg, exploit, setting):
+    try:
+        networkURL = setting.readNetworkURL(arg)
+        exploit.setNetwork(networkURL)
+    except:
+        print("No Exploit loaded")
+
+def set(arg, exploit):
     key = arg.split(' ')[0]
     element = arg.split(' ')[1]
     value = arg.split(' ')[2]
-    exploit.set_parameter(key, element, value)
-    path = EXPLOITS_PATH + pocName + "/config.yml"
-    print(path)
+    exploit.setParameter(key, element, value)
 
-    storeParaToYaml(path, key, element, value)   
-    return exploit
-
-def storeParaToYaml(path, key, element, value):
-    fr = open(path, "r")
-    configuration = yaml.full_load(fr)
-    fr.close()
+# def storeParaToYaml(path, key, element, value):
+#     fr = open(path, "r")
+#     configuration = yaml.full_load(fr)
+#     fr.close()
     
-    configuration[key.lower()][element] = value
-    print(configuration)
-    fw = open(path, "w")
-    yaml.dump(configuration, fw)
-    fw.close()
+#     configuration[key.lower()][element] = value
+#     print(configuration)
+#     fw = open(path, "w")
+#     yaml.dump(configuration, fw)
+#     fw.close()
     
 
 def update(exploit):
-    return Exploit(exploit.name,EXPLOITS_PATH+exploit.name)
+    exploit.loadConfig()
 
 
 def test(exploit, setting):
@@ -117,18 +115,11 @@ def test(exploit, setting):
     else:
     # Create folder in /tmp
         temp = '/tmp'
-        if setting.development_mode:
-            exploit_path = os.path.join('exploits/', exploit.name)
-            path = os.path.join(temp, DEVMODE_TEMP_FOLDER_PREFIX+exploit.name)
-        else:
-            exploit_path = os.path.join(setting.path_to_database, exploit.name)
-            path = os.path.join(temp, NORMAL_TEMP_FOLDER_PREFIX+exploit.name)
+        exploit_path = os.path.join('exploits/', exploit.name)
+        path = os.path.join(temp, DEVMODE_TEMP_FOLDER_PREFIX+exploit.name)
         oldpwd = os.getcwd()
         if not os.path.exists(path):
             os.mkdir(path)
-        # elif not setting.development_mode: 
-        #     shutil.rmtree(path)
-        #     os.mkdir(path)
     # Create three sub directories
         subdirectories = ["contracts", "scripts", "contracts/interfaces"]
         for subdirectory in subdirectories:
@@ -153,24 +144,22 @@ def test(exploit, setting):
             dst_path = os.path.join(path, "contracts/" + os.path.basename(file_path))
             shutil.copy(file_path, dst_path)
     # Create a config.yml based on users' inputs in this folder
-        with open(os.path.join(path, 'config.yml'), 'w') as f:
-            yaml.dump(exploit.config, f)
+        # with open(os.path.join(path, 'config.yml'), 'w') as f:
+        #     yaml.dump(exploit.config, f)
+        shutil.copyfile(os.path.join(exploit_path, 'config.yml'), os.path.join(path, 'config.yml'))
     # Run exploit
         os.chdir(path)
         os.system("npx hardhat run scripts/attack.ts")
     # Return results
 
     # Delete this folder.
-        # if not setting.development_mode:
-            # shutil.rmtree(path) 
-        # if not setting.development_mode:
-        #     shutil.rmtree(os.path.join(oldpwd,"exploits",exploit.name))
+        shutil.rmtree(path)
+        
         os.chdir(oldpwd)
 
 def close(exploit, setting):
-    if not setting.development_mode:
-        oldpwd = os.getcwd()
-        os.chdir('/tmp')
-        for match in glob.iglob(NORMAL_TEMP_FOLDER_PREFIX+"*"):
-            shutil.rmtree(match)
-        os.chdir(oldpwd)
+    oldpwd = os.getcwd()
+    os.chdir('/tmp')
+    for match in glob.iglob(DEVMODE_TEMP_FOLDER_PREFIX+"*"):
+        shutil.rmtree(match)
+    os.chdir(oldpwd)

@@ -50,16 +50,18 @@ class FrameworkShell(cmd.Cmd):
     # choose exploit
     def do_load(self, arg):
         'Choose an exploit with fullname'
-        self.pocName = arg
         self.exploit = lib.command.load(arg, self.setting)
     
+    def do_use(self, arg):
+        'Use a specific nework for testing'
+        lib.command.useNetworks(arg, self.exploit, self.setting)
     # set parameters
     def do_set(self, arg):
         'Set a parameter required by specific exploit'
-        self.exploit = lib.command.set(arg, self.exploit, self.pocName)
+        lib.command.set(arg, self.exploit)
     
     def do_update(self, arg):
-        self.exploit = lib.command.update(self.exploit)
+        lib.command.update(self.exploit)
 
     # show current value of parameters
     def do_show_parameters(self, arg):
@@ -69,7 +71,7 @@ class FrameworkShell(cmd.Cmd):
     def do_test(self,arg):
         'Testing selected exploit'
         #@audit update it before test
-        self.exploit = lib.command.update(self.pocName)
+        lib.command.update(self.exploit)
         lib.command.test(self.exploit, self.setting)
 if __name__ == '__main__':
     FrameworkShell().cmdloop()
