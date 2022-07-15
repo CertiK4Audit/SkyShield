@@ -26,15 +26,9 @@ class FrameworkShell(cmd.Cmd):
     file = None
     exploit = None
     setting = Setting()
+    pocName = ""
 
     # basic commands
-    def do_test(self, arg):
-        'Test command'
-        print(arg)
-        print('test')
-    def do_test2(self, arg):
-        'Test second command'
-        print('test2')
     def do_clear(self,arg):
         'Clear shell'
         clear()
@@ -42,39 +36,33 @@ class FrameworkShell(cmd.Cmd):
         'Exit framework'
         lib.command.close(self.exploit, self.setting)
         return True
-    # enter development mode
-    def do_enter_dev_mode(self,arg):
-        'Enter the development mode'
-        self.setting.development_mode = True
-        self.prompt = "({})(dev) > ".format(Str("framework").red())
-    # exit development mode
-    def do_exit_dev_mode(self,arg):
-        'Exit the development mode'
-        self.setting.development_mode = False
-        self.prompt = "({}) > ".format(Str("framework").red())
+    
+    # init the environmemt, install basic packages
     def do_init(self,arg):
         'Install required node_modules'
         lib.command.init(arg)
+    
     # list all exploits
     def do_list(self, arg):
         'List all exploits'
         lib.command.list(self.setting)
-    # search exploit
-    def do_search(self, arg):
-        'Search exploits via keyword'
-        lib.command.search(arg,self.setting)
+    
     # choose exploit
     def do_load(self, arg):
         'Choose an exploit with fullname'
+        self.pocName = arg
         self.exploit = lib.command.load(arg, self.setting)
-    # show helper of exploit 
-    def do_info(self, arg):
-        'Choose an exploit with fullname'
-        lib.command.info(self.exploit)
+    
     # set parameters
     def do_set(self, arg):
         'Set a parameter required by specific exploit'
-        self.exploit = lib.command.set(arg, self.exploit)
+        self.exploit = lib.command.set(arg, self.exploit, self.pocName)
+    
+    def do_update(self, arg):
+        self.exploit = lib.command.update(self.pocName)
+
+
+    #@audit can update replace import? Notice my update logic is create a new exploit
     # set parameters from customized config.yml file
     def do_import(self, arg):
         'Set parameters from customized config.yml file'
@@ -84,8 +72,10 @@ class FrameworkShell(cmd.Cmd):
         'Set a parameter required by specific exploit'
         lib.command.showParameters(self.exploit, self.setting)
     # run exploits
-    def do_run(self,arg):
-        'Run selected exploit'
-        lib.command.run(self.exploit, self.setting)
+    def do_test(self,arg):
+        'Testing selected exploit'
+        #@audit update it before test
+        self.exploit = lib.command.update(self.pocName)
+        lib.command.test(self.exploit, self.setting)
 if __name__ == '__main__':
     FrameworkShell().cmdloop()

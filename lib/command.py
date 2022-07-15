@@ -1,6 +1,7 @@
 from genericpath import exists
 from importlib.resources import path
-import os, glob, yaml, shutil, time
+from inspect import Parameter
+import sys, os, glob, yaml, shutil, time
 from .exploit import Exploit
 from .setting import Setting
 
@@ -8,60 +9,64 @@ from .setting import Setting
 NORMAL_TEMP_FOLDER_PREFIX = 'exploit-framework-normal-tmp-'
 DEVMODE_TEMP_FOLDER_PREFIX = 'exploit-framework-dev-tmp-'
 
-def init(arg):
-    oldpwd = os.getcwd()
-    os.chdir('configurations')
-    os.system('npm install')
-    os.chdir(oldpwd)
+# Variables
+POC_GITHUB = "git@github.com:CertiK-Yuannan/PoC_Template.git"
+POC_LIST_DIR = "./PoC_Template/template_list.csv"
+EXPLOITS_PATH = "./exploits/"
 
-def search(arg, setting):
+
+def init(arg):
+    init_installPackage()
+    init_loadPoC()
+
+# install packages specified in the configuration packages
+def init_installPackage():
+    prePwd = os.getcwd()
+    os.chdir('./configurations')
+    os.system('npm install')
+    os.chdir(prePwd) 
+
+# load PoCs github to the current folder
+def init_loadPoC():
     try:
-        oldpwd = os.getcwd()
-        os.chdir(setting.path_to_database)
-        for file in glob.iglob(f'*{arg}*'):
-            print(file)
-        os.chdir(oldpwd)
-        os.chdir('exploits')
-        for file in glob.iglob(f'*{arg}*'):
-            print(file + " (dev)")
-        os.chdir(oldpwd)
+        print("Downloading PoCs ....")
+        os.system("git clone" + " " + POC_GITHUB)
     except:
-        print("Incorrect database path")
+        print("Unable to download PoCs")
+
 def list(setting):
     try:
-        exploits = []
-        for (dirpath, dirnames, filenames) in os.walk(setting.path_to_database):
-            exploits.extend(dirnames)
-            break
+        f = open(POC_LIST_DIR, "r")
+        exploits = f.readlines()
+        f.close()
         for exploit in exploits:
             print (exploit)
-        exploits_dev =[]
-        for (dirpath, dirnames, filenames) in os.walk('exploits'):
-            exploits_dev.extend(dirnames)
-            break
-        for exploit_dev in exploits_dev:
-            print(exploit_dev + " (dev)")
     except:
         print("Incorrect database path")
 
 def load(arg, setting):
     try:
-        exploit_path = None
-        if setting.development_mode:
-            if os.path.exists(os.path.join(os.getcwd(), "exploits/"+arg)):
-                exploit_path = os.path.join(os.getcwd(), "exploits/"+arg)
-            elif os.path.exists(os.path.join(setting.path_to_database, arg)):
-                exploit_path = os.path.join(setting.path_to_database, arg)
-                destination_path = os.path.join(os.getcwd(), "exploits/"+arg)
-                shutil.copytree(exploit_path, destination_path)
-            else:
-                raise Exception("Exploit not existed")
-        else:
-            if os.path.exists(os.path.join(setting.path_to_database, arg)):
-                exploit_path = os.path.join(setting.path_to_database, arg)
-            else:
-                raise Exception("Exploit not existed")
-        exploit = Exploit(arg, exploit_path)
+        #remove old PoC's if have 
+        try:
+            os.system("rm -rf " + EXPLOITS_PATH + arg)
+        except Exception as e:
+            print(e)
+
+        prePwd = os.getcwd()
+        # checkout to given branch
+        os.chdir(EXPLOITS_PATH)
+        os.system("git clone -b" + " " + arg + " " + POC_GITHUB)
+
+        ## if it has been downloaded
+        try:
+            os.rename("PoC_Template", arg)
+        except Exception as e:
+            print(e)
+        os.chdir(prePwd) 
+
+        #set parameters
+        exploit = Exploit(arg, EXPLOITS_PATH + arg)
+        print("##############################  "+arg+ " PoC" + "  ################################")
         print(exploit.config['description'])
     except Exception as e:
         print(e)
@@ -69,11 +74,6 @@ def load(arg, setting):
         print('Exception occurred when loading config file')
     return exploit
 
-def info(exploit):
-    try:
-        print(exploit.config['description'])
-    except:
-        print("No Exploit loaded")
 
 def showParameters(exploit, setting):
     try:
@@ -81,12 +81,31 @@ def showParameters(exploit, setting):
     except:
         print("No Exploit loaded")
 
-def set(arg, exploit):
+def set(arg, exploit, pocName):
     key = arg.split(' ')[0]
     element = arg.split(' ')[1]
     value = arg.split(' ')[2]
     exploit.set_parameter(key, element, value)
+    path = EXPLOITS_PATH + pocName + "/config.yml"
+    print(path)
+
+    storeParaToYaml(path, key, element, value)   
     return exploit
+
+def storeParaToYaml(path, key, element, value):
+    fr = open(path, "r")
+    configuration = yaml.full_load(fr)
+    fr.close()
+    
+    configuration[key.lower()][element] = value
+    print(configuration)
+    fw = open(path, "w")
+    yaml.dump(configuration, fw)
+    fw.close()
+    
+
+def update(pocName):
+    return Exploit(pocName,EXPLOITS_PATH+ pocName)
 
 def importConfig(arg, exploit):
     try:
@@ -109,7 +128,7 @@ def importConfig(arg, exploit):
         print("Import Error")
     return exploit
 
-def run(exploit, setting):
+def test(exploit, setting):
     # Check exploit
     if (exploit is None):
         print ('No Exploit loaded')
