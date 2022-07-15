@@ -79,8 +79,14 @@ def showParameters(exploit, setting):
 
 def useNetworks(arg, exploit, setting):
     try:
-        networkURL = setting.readNetworkURL(arg)
-        exploit.setNetwork(networkURL)
+        if(len(arg.split(' '))==1):
+            networkURL = setting.readNetworkURL(arg)
+            exploit.setNetwork(networkURL)
+        elif(len(arg.split(' '))==2):
+            network = arg.split(' ')[0]
+            blockNumber = arg.split(' ')[1]
+            networkURL = setting.readNetworkURL(network)
+            exploit.setNetwork(networkURL,blockNumber)
     except:
         print("No Exploit loaded")
 
