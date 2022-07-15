@@ -104,29 +104,9 @@ def storeParaToYaml(path, key, element, value):
     fw.close()
     
 
-def update(pocName):
-    return Exploit(pocName,EXPLOITS_PATH+ pocName)
+def update(exploit):
+    return Exploit(exploit.name,EXPLOITS_PATH+exploit.name)
 
-def importConfig(arg, exploit):
-    try:
-        if (exploit is None):
-            raise Exception('No Exploit loaded')
-        path = arg.split(' ')[0]
-        if os.path.exists(path):
-            with open(path) as f:
-                data = yaml.load(f, Loader=yaml.FullLoader)
-                for key, value in data['address'].items():
-                    exploit.set_parameter('address', key, value)
-                for key, value in data['parameters'].items():
-                    exploit.set_parameter('parameters', key, value)
-                for key, value in data['networks'].items():
-                    exploit.set_parameter('networks', key, value)
-        else:
-            raise Exception('Config File Not Found')
-    except Exception as e:
-        print(e)
-        print("Import Error")
-    return exploit
 
 def test(exploit, setting):
     # Check exploit

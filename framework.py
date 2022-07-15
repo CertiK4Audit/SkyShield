@@ -59,14 +59,8 @@ class FrameworkShell(cmd.Cmd):
         self.exploit = lib.command.set(arg, self.exploit, self.pocName)
     
     def do_update(self, arg):
-        self.exploit = lib.command.update(self.pocName)
+        self.exploit = lib.command.update(self.exploit)
 
-
-    #@audit can update replace import? Notice my update logic is create a new exploit
-    # set parameters from customized config.yml file
-    def do_import(self, arg):
-        'Set parameters from customized config.yml file'
-        self.exploit = lib.command.importConfig(arg, self.exploit)
     # show current value of parameters
     def do_show_parameters(self, arg):
         'Set a parameter required by specific exploit'
