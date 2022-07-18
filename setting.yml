@@ -1,6 +1,3 @@
-path:
-  database: "/Users/yangyuannan/Sandbox/poc_database"
-
 # The url and blockNumber of archive node
 networks:
   bsc:
@@ -8,3 +5,4 @@ networks:
     blockNumber: '0'
   eth:
     url: "https://wandering-proud-bush.discover.quiknode.pro/17bf7e4b0bdbf9d31aa1495bb66b1430aacde04d/"
+    blockNumber: '0'
