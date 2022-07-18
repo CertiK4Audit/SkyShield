@@ -1,6 +1,7 @@
 from genericpath import exists
 from importlib.resources import path
 from inspect import Parameter
+from posixpath import dirname
 import sys, os, glob, yaml, shutil, time
 from .exploit import Exploit
 from .setting import Setting
@@ -29,6 +30,8 @@ def init_installPackage():
 # load PoCs github to the current folder
 def init_loadPoC():
     try:
+        if os.path.exists("PoC_Template"):
+            shutil.rmtree("PoC_Template")
         print("Downloading PoCs ....")
         os.system("git clone -b main" + " " + POC_GITHUB)
     except:
@@ -47,21 +50,20 @@ def list(setting):
 def load(arg, setting):
     try:
         #Create the folder
-        try:
+        if not os.path.exists(EXPLOITS_PATH):
             os.system("mkdir " + EXPLOITS_PATH)
-        except Exception as e:
-            print(e)
+            
         #remove old PoC's if have 
-        try:
-            os.system("rm -rf " + EXPLOITS_PATH + arg)
-        except Exception as e:
-            print(e)
+        # try:
+        #     os.system("rm -rf " + EXPLOITS_PATH + arg)
+        # except Exception as e:
+        #     print(e)
 
         prePwd = os.getcwd()
         # checkout to given branch
-        os.chdir(EXPLOITS_PATH)
-        os.system("git clone -b" + " " + arg + " " + POC_GITHUB + " "+arg)
-
+        if not os.path.exists(EXPLOITS_PATH+arg):
+            os.chdir(EXPLOITS_PATH)
+            os.system("git clone -b" + " " + arg + " " + POC_GITHUB + " "+arg)
         os.chdir(prePwd) 
         if not os.path.exists(os.path.join(EXPLOITS_PATH, arg)):
             raise Exception("Network problem or PoC not found")
@@ -121,7 +123,7 @@ def test(exploit, setting):
     # Check exploit
     if (exploit is None):
         print ('No Exploit loaded')
-    elif not os.path.exists('configurations/node_modules') or not os.path.exists('configurations/package-lock.json'):
+    elif not os.path.exists('configurations/node_modules') or not os.path.exists('configurations/package-lock.json') or not os.path.exists('PoC_Template/interfaces'):
         print ('No initialized node_modules, please run command `init`')
     else:
     # Create folder in /tmp
@@ -129,8 +131,9 @@ def test(exploit, setting):
         exploit_path = os.path.join('exploits/', exploit.name)
         path = os.path.join(temp, DEVMODE_TEMP_FOLDER_PREFIX+exploit.name)
         oldpwd = os.getcwd()
-        if not os.path.exists(path):
-            os.mkdir(path)
+        if os.path.exists(path):
+            shutil.rmtree(path)    
+        os.mkdir(path)
     # Create three sub directories
         subdirectories = ["contracts", "scripts", "contracts/interfaces"]
         for subdirectory in subdirectories:
@@ -148,7 +151,8 @@ def test(exploit, setting):
         interfaces = exploit.config['interfaces']
         if interfaces is not None:
             for interface in interfaces:
-                shutil.copyfile('contracts/interfaces/' + interface, os.path.join(path,'contracts/interfaces/', interface))
+                os.makedirs(os.path.join(path,'contracts/interfaces/', os.path.dirname(interface)), exist_ok=True)
+                shutil.copyfile('PoC_Template/interfaces/' + interface, os.path.join(path,'contracts/interfaces/', interface))
     # Copy attack.ts to scripts and exploit.sol to contracts.
         shutil.copyfile(os.path.join(exploit_path, 'Attack.ts'), os.path.join(path,'scripts', 'Attack.ts'))
         for file_path in glob.glob(os.path.join(exploit_path, '**', '*.sol'), recursive=True):
