@@ -1,8 +1,7 @@
 # The url and blockNumber of archive node
 networks:
   bsc:
-    url: "https://spring-empty-field.bsc.discover.quiknode.pro/a3c42e4b25fe985fe3654add8b5bb8c18dde2c43/"
-    blockNumber: '0'
+    #url: "https://spring-empty-field.bsc.discover.quiknode.pro/a3c42e4b25fe985fe3654add8b5bb8c18dde2c43/"
+    url: "https://nd-615-585-235.p2pify.com/b4998084582e65fec3eb93545a6a8deb"
   eth:
     url: "https://wandering-proud-bush.discover.quiknode.pro/17bf7e4b0bdbf9d31aa1495bb66b1430aacde04d/"
-    blockNumber: '0'

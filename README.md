@@ -21,12 +21,13 @@
 1. List all POC: `list`
 2. Load the desired POC: `load [name]`
 3. Show the parameters of loaded POC: `show_parameters`
-4. Set specific parameter of the loaded POC: `set [categories] [parameter] [value]`
+4. If you want to change networks or block numbers: `use [network] [blockNumber]`
+5. Set specific parameter of the loaded POC: `set [categories] [parameter] [value]`
     - Example: 
         - `set networks url https://speedy-nodes-nyc.moralis.io/TOKEN/bsc/mainnet/archive`
         - `set address PAIR 0x02b0551B656509754285eeC81eE894338E14C5DD`
-5. Set parameters in the yaml files and updated it to the loaded PoCs.
-6. Import parameters from config file: `import [path_to_config_yml]`
-7. test it by `test`
+6. Set parameters in the yaml files and updated it to the loaded PoCs.
+7. Import parameters from config file: `import [path_to_config_yml]`
+8. test it by `test`
 
     - **Still in progress**
