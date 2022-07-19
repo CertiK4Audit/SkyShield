@@ -30,4 +30,8 @@
 7. Import parameters from config file: `import [path_to_config_yml]`
 8. test it by `test`
 
+
+#### Security Concerns
+1. [x] os.system() will have command injection vulberability
+2. [ ] config.yml files might have Local File Inclusion attack 
     - **Still in progress**

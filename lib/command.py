@@ -5,6 +5,7 @@ from posixpath import dirname
 import sys, os, glob, yaml, shutil, time
 from .exploit import Exploit
 from .setting import Setting
+import subprocess
 
 # The prefix name of temp folder
 NORMAL_TEMP_FOLDER_PREFIX = 'exploit-framework-normal-tmp-'
@@ -24,7 +25,7 @@ def init(arg):
 def init_installPackage():
     prePwd = os.getcwd()
     os.chdir('./configurations')
-    os.system('npm install')
+    subprocess.run(['npm', 'install'])
     os.chdir(prePwd) 
 
 # load PoCs github to the current folder
@@ -33,7 +34,8 @@ def init_loadPoC():
         if os.path.exists("PoC_Template"):
             shutil.rmtree("PoC_Template")
         print("Downloading PoCs ....")
-        os.system("git clone -b main" + " " + POC_GITHUB)
+        #os.system("git clone -b main" + " " + POC_GITHUB)
+        subprocess.run(['git', 'clone', '-b', 'main', POC_GITHUB])
     except:
         print("Unable to download PoCs")
 
@@ -51,19 +53,15 @@ def load(arg, setting):
     try:
         #Create the folder
         if not os.path.exists(EXPLOITS_PATH):
-            os.system("mkdir " + EXPLOITS_PATH)
+            #os.system("mkdir " + EXPLOITS_PATH)
+            subprocess.run(["mkdir", EXPLOITS_PATH])
             
-        #remove old PoC's if have 
-        # try:
-        #     os.system("rm -rf " + EXPLOITS_PATH + arg)
-        # except Exception as e:
-        #     print(e)
-
         prePwd = os.getcwd()
         # checkout to given branch
         if not os.path.exists(EXPLOITS_PATH+arg):
             os.chdir(EXPLOITS_PATH)
-            os.system("git clone -b" + " " + arg + " " + POC_GITHUB + " "+arg)
+            #os.system("git clone -b" + " " + arg + " " + POC_GITHUB + " "+arg)
+            subprocess.run(['git', 'clone', '-b', arg, POC_GITHUB, arg])
         os.chdir(prePwd) 
         if not os.path.exists(os.path.join(EXPLOITS_PATH, arg)):
             raise Exception("Network problem or PoC not found")
@@ -145,7 +143,8 @@ def test(exploit, setting):
     # Create a softlink to node_modules
         os.chdir(path)
         #os.symlink(oldpwd+'/configurations/node_modules', 'node_modules')
-        os.system('ln -s '+oldpwd+'/configurations/node_modules'+ ' node_modules')
+        #os.system('ln -s '+oldpwd+'/configurations/node_modules'+ ' node_modules')
+        subprocess.run(['ln', '-s', oldpwd + '/configurations/node_modules', 'node_modules'])
         os.chdir(oldpwd)
     # Copy required interfaces to contracts/interfaces
         interfaces = exploit.config['interfaces']
@@ -164,7 +163,8 @@ def test(exploit, setting):
         shutil.copyfile(os.path.join(exploit_path, 'config.yml'), os.path.join(path, 'config.yml'))
     # Run exploit
         os.chdir(path)
-        os.system("npx hardhat run scripts/attack.ts")
+        #os.system("npx hardhat run scripts/attack.ts")
+        subprocess.run(['npx', 'hardhat', 'run', 'scripts/attack.ts'])
     # Return results
 
     # Delete this folder.

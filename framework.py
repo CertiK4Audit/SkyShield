@@ -1,3 +1,4 @@
+from asyncio import subprocess
 import cmd, os, shutil
 
 from lib.exploit import Exploit
@@ -5,7 +6,8 @@ from lib.setting import Setting
 import lib.command
 
 
-clear = lambda: os.system('clear')
+#clear = lambda: os.system('clear')
+clear = lambda: subprocess.run(['clear'])
 
 class Str(str):
     def red(self):
