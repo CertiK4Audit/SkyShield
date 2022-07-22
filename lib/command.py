@@ -3,6 +3,8 @@ from importlib.resources import path
 from inspect import Parameter
 from posixpath import dirname
 import sys, os, glob, yaml, shutil, time
+
+from lib.search import searchTokens
 from .exploit import Exploit
 from .setting import Setting
 import subprocess
@@ -48,6 +50,20 @@ def list(setting):
             print (exploit)
     except:
         print("Incorrect database path")
+
+def search (arg, setting):
+    try:
+        tool = arg.split(' ')[0]
+        type = arg.split(' ')[1]
+        if tool=='address':
+            if type == 'token':
+                searchTokens(arg.split(' ')[2],arg.split(' ')[3])
+            else:
+                print('Function not found or work in progress')
+        else:
+            print('Tool not found or work in progress')
+    except:
+        print('Incorrect command')
 
 def load(arg, setting):
     try:

@@ -6,8 +6,8 @@ from lib.setting import Setting
 import lib.command
 
 
-#clear = lambda: os.system('clear')
-clear = lambda: subprocess.run(['clear'])
+clear = lambda: os.system('clear')
+#clear = lambda: subprocess.run(['clear'])
 
 class Str(str):
     def red(self):
@@ -48,6 +48,10 @@ class FrameworkShell(cmd.Cmd):
     def do_list(self, arg):
         'List all exploits'
         lib.command.list(self.setting)
+    
+    def do_search(self,arg):
+        "Search tools (Work in progress)"
+        lib.command.search(arg, self.setting)
     
     # choose exploit
     def do_load(self, arg):
