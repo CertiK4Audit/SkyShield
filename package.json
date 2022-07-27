@@ -1,0 +1,28 @@
+{
+  "name": "skyshield",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CertiK-Yuannan/SkyShield.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CertiK-Yuannan/SkyShield/issues"
+  },
+  "homepage": "https://github.com/CertiK-Yuannan/SkyShield#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+    "hardhat": "^2.10.1"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "npm": "^8.15.0",
+    "yaml": "^2.1.1"
+  }
+}

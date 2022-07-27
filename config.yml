@@ -1,0 +1,10 @@
+abi: ./abis/wbnb.json
+blockNumber: 19924359
+contractAddress: '0x053aa23c88f4ffe10b81595b7848264e89bde997'
+function: totalSupply()
+networks:
+  bsc:
+    url: https://nd-615-585-235.p2pify.com/b4998084582e65fec3eb93545a6a8deb
+  eth:
+    url: https://wandering-proud-bush.discover.quiknode.pro/xxx/
+url: https://nd-615-585-235.p2pify.com/b4998084582e65fec3eb93545a6a8deb

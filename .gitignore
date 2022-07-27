@@ -1,6 +1,11 @@
-__pycache__
-exploits
-.DS_Store
 node_modules
-package-lock.json
-PoC_Template
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+
+#Hardhat files
+cache
+artifacts
+

@@ -1,6 +1,0 @@
-# The url and blockNumber of archive node
-networks:
-  bsc:
-    url: "https://nd-615-585-235.p2pify.com/xxx"
-  eth:
-    url: "https://wandering-proud-bush.discover.quiknode.pro/xxx/"
