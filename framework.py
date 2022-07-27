@@ -42,7 +42,7 @@ class FrameworkShell(cmd.Cmd):
     # init the environmemt, install basic packages
     def do_init(self,arg):
         'Install required node_modules'
-        lib.command.init(arg)
+        lib.command.init(arg, self.setting)
     
     # list all exploits
     def do_list(self, arg):
