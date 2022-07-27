@@ -4,7 +4,9 @@ coverage
 coverage.json
 typechain
 typechain-types
-
+__pycache__
+exploits
+configurations
 #Hardhat files
 cache
 artifacts

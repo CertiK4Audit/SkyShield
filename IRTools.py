@@ -27,7 +27,6 @@ class FrameworkShell(cmd.Cmd):
         clear()
     def do_exit(self,arg):
         'Exit framework'
-        lib.command.close(self.exploit, self.setting)
         return True
     def do_use(self,arg):
         lib.command.useNetwork(arg)

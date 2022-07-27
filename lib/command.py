@@ -1,4 +1,6 @@
 import subprocess
+import requests
+import json
 import yaml
 
 YAML_FILE_PATH="config.yml"
@@ -45,6 +47,8 @@ def setNetwork(network):
             config = yaml.load(f, Loader=yaml.FullLoader)
             print(config['url'])
             config['url'] = config['networks'][network]['url']
+            config['apiURL'] = config['scanAPI'][network]['url']
+            config['apiKey'] = config['scanAPI'][network]['key']
         with open(YAML_FILE_PATH, 'w') as f:
             yaml.dump(config,f)
     except:
@@ -54,7 +58,7 @@ def setBlockNumber(blockNumber):
     try:
         with open(YAML_FILE_PATH, 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-            print(config['url'])
+            #print(config['url'])
             config['blockNumber'] = blockNumber
         with open(YAML_FILE_PATH, 'w') as f:
             yaml.dump(config,f)
@@ -66,5 +70,20 @@ def runQuery():
     subprocess.run(['npx', 'hardhat', 'run', 'scripts/query.ts'])
 
 def getAbi(addr):
-    return './abis/wbnb.json'
+    with open(YAML_FILE_PATH, 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader) 
+            url = config['apiURL']
+            key = config['apiKey']
+    params = {
+        "module": "contract",
+        "action": "getabi",
+        "address": addr,
+        "apikey": key
+    }
+    url = url + "/api"
+    response = requests.get(url = url, params = params)
+    contractABIJson = response.json()['result']
+    with open("./abis/"+addr+".json", 'w') as f:
+        f.write(contractABIJson)
+    return "./abis/"+addr+".json"
 
