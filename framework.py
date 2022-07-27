@@ -51,7 +51,7 @@ class FrameworkShell(cmd.Cmd):
     
     def do_search(self,arg):
         "Search tools (Work in progress)"
-        lib.command.search(arg, self.setting)
+        lib.command.search(arg, self.setting, self.exploit)
     
     # choose exploit
     def do_load(self, arg):

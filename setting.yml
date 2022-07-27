@@ -1,6 +1,19 @@
 # The url and blockNumber of archive node
+repo:
+  poc_template: "https://github.com/CertiK-Yuannan/PoC_Template.git"
+  tokens_database: "https://github.com/MyEtherWallet/ethereum-lists"
+path:
+  poc_template: "./PoC_Template/"
+  exploits: "./exploits/"
 networks:
   bsc:
-    url: "https://nd-615-585-235.p2pify.com/xxx"
+    url: "https://patient-dawn-thunder.bsc.discover.quiknode.pro/373a0dc260bcbaf3245c31929ba691a41c6047c6/"
   eth:
     url: "https://wandering-proud-bush.discover.quiknode.pro/xxx/"
+scanAPI:
+  bsc:
+    url: "https://api.bscscan.com"
+    key: "JGQG2DAFIH7XBIZKPXIKBGBKEB22PFBHT3"
+  eth:
+    url: "https://api.etherscan.io"
+    key: "UYC9ZXIY9E3Z4FAJJ7H766RBI8SZKN642A"
