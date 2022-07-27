@@ -14,11 +14,9 @@ async function main() {
     const contractInstance = await hre.ethers.getContractAt(abi, contractAddress);
     console.log("Interacting with contract: ", contractInstance.address);
 
-    console.log("Calling: ", "contractInstance." + yaml_config.function )
+    console.log("Calling: ", yaml_config.function + "..." )
     const result = await eval("contractInstance." + yaml_config.function);
     console.log(result)
-
-
   }
   
   // We recommend this pattern to be able to use async/await everywhere

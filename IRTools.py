@@ -29,7 +29,9 @@ class FrameworkShell(cmd.Cmd):
         'Exit framework'
         lib.command.close(self.exploit, self.setting)
         return True
-    
+    def do_use(self,arg):
+        lib.command.useNetwork(arg)
+
     # Use specific network
     def do_query(self,arg):
         'Install required node_modules'

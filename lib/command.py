@@ -20,15 +20,22 @@ def query(arg):
         #TODO: add verifications for address and input patter so that user know what is wrong.
         contractAddr = arg.split('.')[0]
         functionCall = arg.split('.')[1]
+        
+        #get abi from address
+        abiPath = getAbi(contractAddr)
+        
         with open(YAML_FILE_PATH, 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
             config['contractAddress'] = contractAddr
             config['function'] = functionCall
+            config['abi'] = abiPath
         with open(YAML_FILE_PATH, 'w') as f:
             yaml.dump(config,f)
+        runQuery()
+        
     except Exception as e:
         print(e)
-        print("No Exploit loaded")
+        print("Query ")
 
 
 
@@ -54,3 +61,10 @@ def setBlockNumber(blockNumber):
     except Exception as e:
         print(e)
         print("Setting block number failed")
+
+def runQuery():
+    subprocess.run(['npx', 'hardhat', 'run', 'scripts/query.ts'])
+
+def getAbi(addr):
+    return './abis/wbnb.json'
+
