@@ -36,4 +36,5 @@ class Setting:
     def __init__(self):
         self.development_mode = True
 
+global setting
 setting = Setting()

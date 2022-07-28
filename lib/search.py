@@ -5,8 +5,9 @@ import subprocess
 from pysondb import db
 from lib.api import handleBscScanAPIResponseForGetContractABI, handleEtherScanAPIResponseForGetContractABI, prepareBscScanAPIParametersForGetContractABI, prepareEtherScanAPIParametersForGetContractABI
 from lib.util import findFiles, findFilesRecusive
+from lib.setting import setting
 
-def searchTokens(setting, network, tokenName):
+def searchTokens(network, tokenName):
     # Format json file to satisfy the requirement of pysondb 
     path = setting.getPathToPOCTemplate()+'tokens/'+network+'/tokens-'+network+'.json'
     
@@ -40,7 +41,7 @@ def searchTokens(setting, network, tokenName):
     os.remove(tmpPath)
     return
 
-def searchInterfacesWithProjectAndKeyword(setting, project, interface):
+def searchInterfacesWithProjectAndKeyword(project, interface):
     print("Please check the detail of interfaces under the folder " + setting.getPathToPOCTemplate()+"interfaces/")
     
     directories = findFiles(project,setting.getPathToPOCTemplate()+"interfaces")
@@ -52,7 +53,7 @@ def searchInterfacesWithProjectAndKeyword(setting, project, interface):
             print ("    Usage: import \"./"+file.replace(setting.getPathToPOCTemplate()+"interfaces/","",1)+"\";")
     return
 
-def searchInterfacesWithKeyword(setting, interface):
+def searchInterfacesWithKeyword(interface):
     print("Please check the detail of interfaces under the folder " + setting.getPathToPOCTemplate()+"interfaces/")
     files = findFilesRecusive(interface, setting.getPathToPOCTemplate()+"interfaces/")
     for file in files:
@@ -60,7 +61,7 @@ def searchInterfacesWithKeyword(setting, interface):
         print ("    Usage: import \"./"+file.replace(setting.getPathToPOCTemplate()+"interfaces/","",1)+"\";")
     return
 
-def searchInterfacesWithAddress(setting, network, address, name=None, exploit=None):
+def searchInterfacesWithAddress(network, address, name=None, exploit=None):
     url = setting.getScanAPIURL(network)
     key = setting.getScanAPIKey(network)
 

@@ -6,8 +6,8 @@ import sys, os, glob, yaml, shutil, time
 from lib.flattener import flattenSolidityFolder
 
 from lib.search import searchInterfacesWithAddress, searchInterfacesWithKeyword, searchInterfacesWithProjectAndKeyword, searchTokens
-from .exploit import Exploit
-from .setting import Setting
+from lib.exploit import exploit
+from lib.setting import setting
 import subprocess
 
 # The prefix name of temp folder
@@ -16,19 +16,19 @@ DEVMODE_TEMP_FOLDER_PREFIX = 'exploit-framework-dev-tmp-'
 
 
 
-def init(arg,setting):
-    init_installPackage(setting)
-    init_loadPoC(setting)
+def init(arg):
+    init_installPackage()
+    init_loadPoC()
 
 # install packages specified in the configuration packages
-def init_installPackage(setting):
+def init_installPackage():
     prePWD = os.getcwd()
     os.chdir('./configurations')
     subprocess.run(['npm', 'install'])
     os.chdir(prePWD) 
 
 # load PoCs github to the current folder
-def init_loadPoC(setting):
+def init_loadPoC():
     try:
         if os.path.exists("PoC_Template"):
             shutil.rmtree("PoC_Template")
@@ -37,34 +37,34 @@ def init_loadPoC(setting):
     except:
         print("Unable to download PoCs")
 
-def list(setting):
+def list():
     try:
         f = open(setting.getPathToPOCDatabase(), "r")
-        exploits = f.readlines()
+        pocs = f.readlines()
         f.close()
-        for exploit in exploits:
-            print (exploit)
+        for poc in pocs:
+            print (poc)
     except:
         print("Incorrect database path")
 
-def search (arg, setting, exploit):
+def search (arg):
     try:
         tool = arg.split()[0]
         if tool=='address':
             type = arg.split()[1]
             if type == 'token':
-                searchTokens(setting, arg.split()[2],arg.split()[3])
+                searchTokens(arg.split()[2],arg.split()[3])
             else:
                 print('Function not found or work in progress')
         elif tool=='interfaces':
             type = arg.split()[1]
             if type == 'address':
                 name = arg.split()[4] if len(arg.split())>4 else None 
-                searchInterfacesWithAddress(setting, arg.split()[2], arg.split()[3], name, exploit)
+                searchInterfacesWithAddress(arg.split()[2], arg.split()[3], name, exploit)
             elif type == 'project':
-                searchInterfacesWithProjectAndKeyword(setting, arg.split()[2], arg.split()[3])
+                searchInterfacesWithProjectAndKeyword(arg.split()[2], arg.split()[3])
             elif type == 'global':
-                searchInterfacesWithKeyword(setting, arg.split()[2])
+                searchInterfacesWithKeyword(arg.split()[2])
             else:
                 print('Function not found or work in progress')
         else:
@@ -73,38 +73,37 @@ def search (arg, setting, exploit):
         print(exception)
         print('Incorrect command')
 
-def load(arg, setting):
+def load(arg):
+    print(os.getcwd())
     try:
         #Create the folder
         if not os.path.exists(setting.getPathToExploits()):
             subprocess.run(["mkdir", setting.getPathToExploits()])
-            
-        prePWD = os.getcwd()
+        
         # checkout to given branch
         if not os.path.exists(setting.getPathToExploits()+arg):
-            os.chdir(setting.getPathToExploits())
-            subprocess.run(['git', 'clone', '-b', arg, setting.getPOCTemplateRepoURL(), arg])
-        os.chdir(prePWD) 
+            subprocess.run(['git', 'clone', '-b', arg, setting.getPOCTemplateRepoURL(), setting.getPathToExploits()+arg])
+
         if not os.path.exists(os.path.join(setting.getPathToExploits(), arg)):
             raise Exception("Network problem or PoC not found")
 
         #set parameters
-        exploit = Exploit(arg, setting.getPathToExploits() + arg)
+        exploit.init(arg, setting.getPathToExploits() + arg)
         print("##############################  "+arg+ " PoC" + "  ################################")
         print(exploit.config['description'])
-    except Exception as e:
-        print(e)
-        exploit = None
-        print('Exception occurred when loading config file')
-    return exploit
 
-def showParameters(exploit, setting):
+    except Exception as e:
+        exploit.init(None, None)
+        print(e)
+        print('Exception occurred when loading config file')
+
+def showParameters():
     try:
         exploit.showParameters()
     except:
         print("No Exploit loaded")
 
-def useNetworks(arg, exploit, setting):
+def useNetworks(arg):
     try:
         if(len(arg.split())==1):
             networkURL = setting.getNetworkURL(arg)
@@ -117,16 +116,16 @@ def useNetworks(arg, exploit, setting):
     except:
         print("No Exploit loaded")
 
-def set(arg, exploit):
+def set(arg):
     key = arg.split()[0]
     element = arg.split()[1]
     value = arg.split()[2]
     exploit.setParameter(key, element, value)
     
-def update(exploit):
+def update():
     exploit.loadConfig()
 
-def flatten(arg, setting):
+def flatten(arg):
     try:
         #TODO Need better method to split 
         sourcePath = arg.split(" /")[0]
@@ -146,9 +145,9 @@ def flatten(arg, setting):
         print("Something wrong")
 
 
-def test(exploit, setting):
+def test():
     # Check exploit
-    if (exploit is None):
+    if (exploit.name is None):
         print ('No Exploit loaded')
     elif not os.path.exists('configurations/node_modules') or not os.path.exists('configurations/package-lock.json') or not os.path.exists('PoC_Template/interfaces'):
         print ('No initialized node_modules, please run command `init`')
@@ -204,7 +203,7 @@ def test(exploit, setting):
         shutil.rmtree(path)    
         os.chdir(oldpwd)
 
-def close(exploit, setting):
+def close():
     oldpwd = os.getcwd()
     os.chdir('/tmp')
     for match in glob.iglob(DEVMODE_TEMP_FOLDER_PREFIX+"*"):
