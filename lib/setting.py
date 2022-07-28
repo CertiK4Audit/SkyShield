@@ -1,5 +1,6 @@
 from xml.dom.expatbuilder import FragmentBuilderNS
 import yaml
+
 class Setting:
     development_mode = False
 
@@ -34,3 +35,5 @@ class Setting:
 
     def __init__(self):
         self.development_mode = True
+
+setting = Setting()

@@ -65,7 +65,7 @@ class FrameworkShell(cmd.Cmd):
     def do_set(self, arg):
         'Set a parameter required by specific exploit'
         lib.command.set(arg, self.exploit)
-    
+    # Update config.yml
     def do_update(self, arg):
         lib.command.update(self.exploit)
 
@@ -73,6 +73,11 @@ class FrameworkShell(cmd.Cmd):
     def do_show_parameters(self, arg):
         'Set a parameter required by specific exploit'
         lib.command.showParameters(self.exploit, self.setting)
+
+    # flatten contracts to specific path
+    def do_flatten(self, arg):
+        'Flatten contracts to specific path'
+        lib.command.flatten(arg, self.setting)
     # run exploits
     def do_test(self,arg):
         'Testing selected exploit'

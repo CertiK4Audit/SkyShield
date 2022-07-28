@@ -3,6 +3,7 @@ from importlib.resources import path
 from inspect import Parameter
 from posixpath import dirname
 import sys, os, glob, yaml, shutil, time
+from lib.flattener import flattenSolidityFolder
 
 from lib.search import searchInterfacesWithAddress, searchInterfacesWithKeyword, searchInterfacesWithProjectAndKeyword, searchTokens
 from .exploit import Exploit
@@ -21,10 +22,10 @@ def init(arg,setting):
 
 # install packages specified in the configuration packages
 def init_installPackage(setting):
-    prePwd = os.getcwd()
+    prePWD = os.getcwd()
     os.chdir('./configurations')
     subprocess.run(['npm', 'install'])
-    os.chdir(prePwd) 
+    os.chdir(prePWD) 
 
 # load PoCs github to the current folder
 def init_loadPoC(setting):
@@ -32,7 +33,6 @@ def init_loadPoC(setting):
         if os.path.exists("PoC_Template"):
             shutil.rmtree("PoC_Template")
         print("Downloading PoCs ....")
-        #os.system("git clone -b main" + " " + setting.getPOCTemplateRepoURL())
         subprocess.run(['git', 'clone', '-b', 'main', setting.getPOCTemplateRepoURL()])
     except:
         print("Unable to download PoCs")
@@ -77,16 +77,14 @@ def load(arg, setting):
     try:
         #Create the folder
         if not os.path.exists(setting.getPathToExploits()):
-            #os.system("mkdir " + setting.getPathToExploits())
             subprocess.run(["mkdir", setting.getPathToExploits()])
             
-        prePwd = os.getcwd()
+        prePWD = os.getcwd()
         # checkout to given branch
         if not os.path.exists(setting.getPathToExploits()+arg):
             os.chdir(setting.getPathToExploits())
-            #os.system("git clone -b" + " " + arg + " " + setting.getPOCTemplateRepoURL() + " "+arg)
             subprocess.run(['git', 'clone', '-b', arg, setting.getPOCTemplateRepoURL(), arg])
-        os.chdir(prePwd) 
+        os.chdir(prePWD) 
         if not os.path.exists(os.path.join(setting.getPathToExploits(), arg)):
             raise Exception("Network problem or PoC not found")
 
@@ -127,6 +125,25 @@ def set(arg, exploit):
     
 def update(exploit):
     exploit.loadConfig()
+
+def flatten(arg, setting):
+    try:
+        #TODO Need better method to split 
+        sourcePath = arg.split(" /")[0]
+        interfacesPath = arg.split(" /")[1]
+        outputPath = arg.split(" /")[2]
+        outputPath = "/"+outputPath
+        interfacesPath = "/" +interfacesPath
+        print("Source: ")
+        print(sourcePath)
+        print("Relative path to interfaces: ")
+        print(interfacesPath)
+        print("Output directory: ")
+        print(outputPath)
+        flattenSolidityFolder(sourcePath, interfacesPath, outputPath)
+    except Exception as e:
+        print(e)
+        print("Something wrong")
 
 
 def test(exploit, setting):
@@ -184,7 +201,7 @@ def test(exploit, setting):
     # Return results
 
     # Delete this folder.
-        #shutil.rmtree(path)    
+        shutil.rmtree(path)    
         os.chdir(oldpwd)
 
 def close(exploit, setting):
