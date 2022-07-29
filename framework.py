@@ -75,6 +75,11 @@ class FrameworkShell(cmd.Cmd):
     def do_flatten(self, arg):
         'Flatten contracts to specific path'
         lib.command.flatten(arg)
+    # Query contract
+    def do_query(self, arg):
+        'Query a specific method in specific address at specific timestamp or blockNumber'
+        lib.command.query(arg)
+
     # run exploits
     def do_test(self,arg):
         'Testing selected exploit'

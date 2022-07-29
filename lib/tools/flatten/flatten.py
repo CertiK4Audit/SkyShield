@@ -1,7 +1,17 @@
 import os
 import subprocess
 from lib.setting import setting
-from lib.util import copyAllSolidityFilesInFolder, copyConfigYamlFile, prepareHardHatEnv, removeTemporaryFolder
+from lib.util import copyAllSolidityFiles, copyConfigYamlFile, dumpYamlFileTo, prepareHardHatEnv, removeTemporaryFolder
+
+def makeConfigYamlFile():
+    config = {
+        'networks':
+            {
+                'blockNumber': 'empty',
+                'url': 'empty'
+    }
+    }
+    return config
 
 
 def flattenSolidityFile(sourcePath, outputPath):
@@ -18,9 +28,10 @@ def flattenSolidityFolder(sourcePath, interfacesPath, outputDirectory):
 
     tmpPath = prepareHardHatEnv("flatten_contracts")
 
-    copyConfigYamlFile("./configurations/", tmpPath)
+    #copyConfigYamlFile("./lib/tools/flatten/", tmpPath)
+    dumpYamlFileTo(makeConfigYamlFile(), tmpPath+'/config.yml')
     
-    copyAllSolidityFilesInFolder(sourcePath, tmpPath+"/contracts")
+    copyAllSolidityFiles(sourcePath, tmpPath+"/contracts")
 
     os.makedirs(outputDirectory, exist_ok=True)
 

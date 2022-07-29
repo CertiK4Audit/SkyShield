@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import subprocess
+import yaml
 
 def findFiles(keyword, path='.'):
 
@@ -65,12 +66,30 @@ def copyRequiredInterfaces(interfaces, src, dst):
 def copyConfigYamlFile(src, dst):
     shutil.copyfile(os.path.join(src, 'config.yml'), os.path.join(dst, 'config.yml'))
 
+def dumpYamlFileTo(content,pathToFile):
+    with open (pathToFile, "w") as f:
+        yaml.dump(content,f)
+
 def copyAttackScripts(src, dst):
     shutil.copyfile(os.path.join(src, 'Attack.ts'), os.path.join(dst,'scripts', 'Attack.ts'))
 
-def copyAllSolidityFilesInFolder(src, dst):
+def copyAllTypeScriptFiles(src,dst):
+    typeScriptFiles = findFilesRecusive(".ts", src)
+    for typeScriptFile in typeScriptFiles:
+        os.makedirs(os.path.join(dst, os.path.dirname(os.path.relpath(typeScriptFile, src))), exist_ok=True)
+        shutil.copy(typeScriptFile, os.path.join(dst, os.path.relpath(typeScriptFile, src)))
+    return
+
+def copyAllSolidityFiles(src, dst):
     solidityFiles = findFilesRecusive(".sol", src)
     for solidityFile in solidityFiles:
         os.makedirs(os.path.join(dst, os.path.dirname(os.path.relpath(solidityFile, src))), exist_ok=True)
         shutil.copy(solidityFile, os.path.join(dst, os.path.relpath(solidityFile, src)))
     return
+
+def executeScripts(path, scriptName):
+    prePWD =  os.getcwd()
+    os.chdir(path)
+    subprocess.run(['npx', 'hardhat', 'run', 'scripts/'+scriptName])
+    os.chdir(prePWD)
+    

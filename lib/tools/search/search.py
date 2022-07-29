@@ -1,11 +1,13 @@
 import json
 import os
-import requests
 import subprocess
 from pysondb import db
-from lib.api import handleBscScanAPIResponseForGetContractABI, handleEtherScanAPIResponseForGetContractABI, prepareBscScanAPIParametersForGetContractABI, prepareEtherScanAPIParametersForGetContractABI
+from lib.api.endpoints import getContractABI
+from lib.api.etherscan import handleEtherScanAPIResponseForGetContractABI,prepareEtherScanAPIParametersForGetContractABI
+from lib.api.bscscan import handleBscScanAPIResponseForGetContractABI, prepareBscScanAPIParametersForGetContractABI
 from lib.util import findFiles, findFilesRecusive
 from lib.setting import setting
+from lib.exploit import exploit
 
 def searchTokens(network, tokenName):
     # Format json file to satisfy the requirement of pysondb 
@@ -61,24 +63,11 @@ def searchInterfacesWithKeyword(interface):
         print ("    Usage: import \"./"+file.replace(setting.getPathToPOCTemplate()+"interfaces/","",1)+"\";")
     return
 
-def searchInterfacesWithAddress(network, address, name=None, exploit=None):
-    url = setting.getScanAPIURL(network)
-    key = setting.getScanAPIKey(network)
+def searchInterfacesWithAddress(network, address, name=None):
 
     # Get contract ABI via Scan API
-    contractABIJson = None
-    if network == "eth":
-        url = url+"/api"
-        params = prepareEtherScanAPIParametersForGetContractABI(key, address)
-        response = requests.get(url = url, params = params)
-        contractABIJson = handleEtherScanAPIResponseForGetContractABI(response)
-    elif network == "bsc":
-        url = url+"/api"
-        params = prepareBscScanAPIParametersForGetContractABI(key, address)
-        response = requests.get(url = url, params = params)
-        contractABIJson = handleBscScanAPIResponseForGetContractABI(response)
-    else:
-        print("Unsupport Network")
+    contractABIJson = getContractABI(network, address)
+    if contractABIJson is None:
         return
     
     # Convert ABI to interfaces
@@ -87,13 +76,14 @@ def searchInterfacesWithAddress(network, address, name=None, exploit=None):
     convertedInterface = subprocess.run(["npx", "abi-to-sol", name], input=echoResult.stdout, capture_output=True)
     
     # Save the interfaces to current POC folder or directly show in terminal
-    if (exploit == None):
+    if (exploit.name == None):
         print("--------------------------------------------------------------")
         print("EXPLOIT NOT LOADED, ONLY SHOW CONVERTED INTERFACE IN TERMINAL")
         print("--------------------------------------------------------------")
         print(convertedInterface.stdout.decode())
     else:
         path = os.path.join(setting.getPathToExploits(), exploit.name)
+        print(path)
         with open(os.path.join(path,name+".sol"), 'w') as f:
             f.write(convertedInterface.stdout.decode())
             print("--------------------------------------------------------------")

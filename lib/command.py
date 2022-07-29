@@ -3,9 +3,10 @@ from importlib.resources import path
 from inspect import Parameter
 from posixpath import dirname
 import sys, os, glob, yaml, shutil, time
-from lib.flattener import flattenSolidityFolder
+from lib.tools.flatten.flatten import flattenSolidityFolder
+from lib.tools.query.query import queryFunctionWithAddressAndBlockNumber
 
-from lib.search import searchInterfacesWithAddress, searchInterfacesWithKeyword, searchInterfacesWithProjectAndKeyword, searchTokens
+from lib.tools.search.search import searchInterfacesWithAddress, searchInterfacesWithKeyword, searchInterfacesWithProjectAndKeyword, searchTokens
 from lib.exploit import exploit
 from lib.setting import setting
 import subprocess
@@ -60,7 +61,7 @@ def search (arg):
             type = arg.split()[1]
             if type == 'address':
                 name = arg.split()[4] if len(arg.split())>4 else None 
-                searchInterfacesWithAddress(arg.split()[2], arg.split()[3], name, exploit)
+                searchInterfacesWithAddress(arg.split()[2], arg.split()[3], name)
             elif type == 'project':
                 searchInterfacesWithProjectAndKeyword(arg.split()[2], arg.split()[3])
             elif type == 'global':
@@ -143,6 +144,21 @@ def flatten(arg):
     except Exception as e:
         print(e)
         print("Something wrong")
+
+def query(arg):
+    # try:
+    network = arg.split()[0]
+    blockNumber = arg.split()[1]
+    address = arg.split()[2]
+    functionWithParameters =  arg.split()[3]
+    if len(arg.split()) > 4:
+        print ("Work in progress")
+    else:
+        queryFunctionWithAddressAndBlockNumber(network, blockNumber, address, functionWithParameters)  
+    # except Exception as e:
+        # print(e)
+        # print("Something wrong")
+
 
 
 def test():
