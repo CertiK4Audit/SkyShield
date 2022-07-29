@@ -17,7 +17,7 @@
 3. Clear command shell: `clear`
 4. Show the info of specific command: `help [commmand]`
 
-#### Exploit related command
+#### POC
 1. List all POC: `list`
 2. Load the desired POC: `load [name]`
 3. Show the parameters of loaded POC: `show_parameters`
@@ -30,6 +30,11 @@
 7. Import parameters from config file: `import [path_to_config_yml]`
 8. test it by `test`
 
+#### Search
+
+#### Flatten
+
+#### Query
 
 #### Security Concerns
 1. [x] os.system() will have command injection vulberability
