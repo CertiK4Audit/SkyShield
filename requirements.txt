@@ -1,0 +1,3 @@
+pysondb
+PyYAML
+requests
