@@ -1,10 +1,23 @@
-## Goal
-1. Phase One:
-	- Help auditors develop POC 
-2. Phase Two
-	- Test exploit or POC on-chain
-3. Phase Three
-	- Automate exploit testing
+## How to use this tool
+
+### Environments
+1. Clone the repo or use gitpod to open it
+2. In the repo, use `ExploitFramewrok-light` branch
+3. If you already installed python3 and pip3, go to step 4 directly.
+	3.a. Install python3 (To be complete)
+4. Install python dependencies `pip3 install -r requirement.txt`
+
+### Use the framework
+1. Run framwork by `python3 framwork.py`
+2. See all the PoC template provided by using `list` command
+3. Load the PoC template by `load public_burn`
+4. Update settings by using commands specified in the next section
+5. Run the exploit by using `test`
+
+## Command Table
+
+
+
 ## Functional Requirements
 ### Basic Requirements
 1. Developers or auditors only need to care about the scripts and contracts for POC,  instead of setup environment and network.
@@ -154,7 +167,7 @@
 				- `set address PAIR 0x02b0551B656509754285eeC81eE894338E14C5DD`
 				- `set parameters amount 100`
 				- `set networks url https://speedy-nodes-nyc.moralis.io/TOKEN/bsc/mainnet`
-				- ``set networks blockNumber 14433982`
+				- `set networks blockNumber 14433982`
 	- Set the network information via command
 		- Command:  `use [Network] [BlockNumber]`
 			- Examples:
