@@ -35,7 +35,9 @@ def init_loadPoC():
             shutil.rmtree("PoC_Template")
         print("Downloading PoCs ....")
         subprocess.run(['git', 'clone', '-b', 'main', setting.getPOCTemplateRepoURL()])
-    except:
+    except Exception as exception:
+        print('Exception: ')
+        print(exception)
         print("Unable to download PoCs")
 
 def list():
@@ -45,7 +47,9 @@ def list():
         f.close()
         for poc in pocs:
             print (poc)
-    except:
+    except Exception as exception:
+        print('Exception: ')
+        print(exception)
         print("Incorrect database path")
 
 def search (arg):
@@ -71,12 +75,19 @@ def search (arg):
         else:
             print('Tool not found or work in progress')
     except Exception as exception:
+        print('Exception: ')
         print(exception)
-        print('Incorrect command')
+        print('Usage:')
+        print('      search address token [Network] [Keyword]')
+        print('      search interface global [Keyword]')
+        print('      search interface project [Project_Keyword] [Keyword]')
+        print('      search interface address [Network] [Address]')
+
 
 def load(arg):
-    print(os.getcwd())
     try:
+        if len(arg.split()) != 1:
+            raise Exception ('Unknown Command')
         #Create the folder
         if not os.path.exists(setting.getPathToExploits()):
             subprocess.run(["mkdir", setting.getPathToExploits()])
@@ -93,15 +104,18 @@ def load(arg):
         print("##############################  "+arg+ " PoC" + "  ################################")
         print(exploit.config['description'])
 
-    except Exception as e:
-        exploit.init(None, None)
-        print(e)
-        print('Exception occurred when loading config file')
+    except Exception as exception:
+        print('Exception: ')
+        print(exception)
+        print('Usage:')
+        print('      load [POC_Name]')
 
 def showParameters():
     try:
         exploit.showParameters()
-    except:
+    except Exception as exception:
+        print('Exception: ')
+        print(exception)
         print("No Exploit loaded")
 
 def useNetworks(arg):
@@ -114,14 +128,28 @@ def useNetworks(arg):
             blockNumber = arg.split()[1]
             networkURL = setting.getNetworkURL(network)
             exploit.setNetwork(networkURL,blockNumber)
-    except:
-        print("No Exploit loaded")
+        else:
+            raise Exception("Unknown Command")
+    except Exception as exception:
+        print('Exception: ')
+        print(exception)
+        print('Usage:')
+        print('      use [Network]')
+        print('      use [Network] [BlockNumber]')
 
 def set(arg):
-    key = arg.split()[0]
-    element = arg.split()[1]
-    value = arg.split()[2]
-    exploit.setParameter(key, element, value)
+    try:
+        key= arg.split()[0]
+        element = arg.split()[1]
+        value = arg.split()[2]
+        exploit.setParameter(key, element, value)
+    except Exception as exception:
+        print('Exception: ')
+        print(exception)
+        print('Usage:')
+        print('      set address [Element] [Value]')
+        print('      set networks [Element] [Value]')
+        print('      set parameters [Element] [Value]')
     
 def update():
     exploit.loadConfig()
@@ -141,23 +169,27 @@ def flatten(arg):
         print("Output directory: ")
         print(outputPath)
         flattenSolidityFolder(sourcePath, interfacesPath, outputPath)
-    except Exception as e:
-        print(e)
-        print("Something wrong")
+    except Exception as exception:
+        print('Exception: ')
+        print(exception)
+        print('Usage:')
+        print('      flatten [Path_To_Source_Code] [Relative_Path_To_Interface_Folder_Or_Single_Interface_File] [Output_Directory]')
 
 def query(arg):
-    # try:
-    network = arg.split()[0]
-    blockNumber = arg.split()[1]
-    address = arg.split()[2]
-    functionWithParameters =  arg.split()[3]
-    if len(arg.split()) > 4:
-        print ("Work in progress")
-    else:
-        queryFunctionWithAddressAndBlockNumber(network, blockNumber, address, functionWithParameters)  
-    # except Exception as e:
-        # print(e)
-        # print("Something wrong")
+    try:
+        network = arg.split()[0]
+        blockNumber = arg.split()[1]
+        address = arg.split()[2]
+        functionWithParameters =  arg.split()[3]
+        if len(arg.split()) > 4:
+            print ("Work in progress")
+        else:
+            queryFunctionWithAddressAndBlockNumber(network, blockNumber, address, functionWithParameters)  
+    except Exception as exception:
+        print('Exception: ')
+        print(exception)
+        print('Usage:')
+        print('      query [network] [blockNumber] [address] [functionWithParameters]')
 
 
 

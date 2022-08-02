@@ -33,6 +33,7 @@ def queryFunctionWithAddressAndBlockNumber(network, blockNumber, address, functi
     contractABIJson = getContractABI(network, address)
     
     if contractABIJson is None:
+        removeTemporaryFolder("query")
         return
     
     with open(tmpPath+"/"+address + '.json', "w") as f:
