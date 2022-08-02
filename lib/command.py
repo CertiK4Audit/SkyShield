@@ -201,7 +201,7 @@ def test():
                 shutil.copyfile(setting.getPathToPOCTemplate()+'interfaces/' + interface, os.path.join(path,'contracts/', interface))
     
     # Copy attack.ts to scripts and exploit.sol to contracts.
-        shutil.copyfile(os.path.join(exploit_path, 'Attack.ts'), os.path.join(path,'scripts', 'Attack.ts'))
+        shutil.copyfile(os.path.join(exploit_path, 'attack.ts'), os.path.join(path,'scripts', 'attack.ts'))
         for file_path in glob.glob(os.path.join(exploit_path, '**', '*.sol'), recursive=True):
             dst_path = os.path.join(path, "contracts/" + os.path.basename(file_path))
             shutil.copy(file_path, dst_path)
