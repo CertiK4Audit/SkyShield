@@ -31,9 +31,13 @@ class FrameworkShell(cmd.Cmd):
     def do_use(self,arg):
         lib.command.useNetwork(arg)
 
+    def do_init(self,arg):
+        'Install required node_modules'
+        lib.command.init()
+
     # Use specific network
     def do_query(self,arg):
-        'Install required node_modules'
+        'Quer'
         lib.command.query(arg)
     
 

@@ -1,19 +1,20 @@
-abi: ./abis/0xbb4.json
-apiKey: XXXXXXXX
-apiURL: https://api.bscscan.com
-blockNumber: '19927225'
-contractAddress: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
-function: totalSupply()
+abi: ./abis/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599.json
+apiKey: D1AAFPR92TDP4FX57FR4ZZFX9HYPMD4M73
+apiURL: https://api.etherscan.io/
+blockNumber: '15259530'
+contractAddress: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+function: balanceOf('0x88a69b4e698a4b090df6cf5bd7b2d47325ad30a3')
 networks:
   bsc:
-    url: https://nd-615-585-235.p2pify.com/XXXXXXX
+    url: https://nd-615-585-235.p2pify.com/b4998084582e65fec3eb93545a6a8deb
   eth:
-    url: https://wandering-proud-bush.discover.quiknode.pro/xxx/
+    url: https://wandering-proud-bush.discover.quiknode.pro/17bf7e4b0bdbf9d31aa1495bb66b1430aacde04d/
+param: null
 scanAPI:
   bsc:
-    key: XXXXX
-    url: https://api.bscscan.com
+    key: GJYANXMJ8FS9GSB2MC2EIR3ABQE8S38FH3
+    url: https://api.bscscan.com/
   eth:
-    key: XXXXXXXX
-    url: https://api.etherscan.io
-url: https://nd-615-585-235.p2pify.com/XXXX
+    key: D1AAFPR92TDP4FX57FR4ZZFX9HYPMD4M73
+    url: https://api.etherscan.io/
+url: https://wandering-proud-bush.discover.quiknode.pro/17bf7e4b0bdbf9d31aa1495bb66b1430aacde04d/
