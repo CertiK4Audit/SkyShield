@@ -61,7 +61,7 @@ def search (arg):
                 searchTokens(arg.split()[2],arg.split()[3])
             else:
                 print('Function not found or work in progress')
-        elif tool=='interfaces':
+        elif tool=='interface':
             type = arg.split()[1]
             if type == 'address':
                 name = arg.split()[4] if len(arg.split())>4 else None 

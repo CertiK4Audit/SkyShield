@@ -1,7 +1,7 @@
 import os
 import subprocess
 from lib.setting import setting
-from lib.util import copyAllSolidityFiles, copyConfigYamlFile, dumpYamlFileTo, prepareHardHatEnv, removeTemporaryFolder
+from lib.util import bcolors, copyAllSolidityFiles, copyConfigYamlFile, dumpYamlFileTo, prepareHardHatEnv, removeTemporaryFolder
 
 def makeConfigYamlFile():
     config = {
@@ -20,7 +20,7 @@ def flattenSolidityFile(sourcePath, outputPath):
     # TODO Fix the error of multiple SPDX license
     # https://github.com/NomicFoundation/truffle-flattener/issues/55
         f.write(flattenedContracts.stdout.decode())
-        print(flattenedContracts.stderr.decode())
+        print(bcolors.FAIL + flattenedContracts.stderr.decode() + bcolors.ENDC)
     
     return
 
@@ -41,7 +41,7 @@ def flattenSolidityFolder(sourcePath, interfacesPath, outputDirectory):
     if not os.path.isdir(tmpPath+"/contracts"+interfacesPath):
         file = tmpPath+"/contracts"+interfacesPath
         flattenSolidityFile(file, outputDirectory+"/"+os.path.basename(file))
-        print("Output: ", os.path.normpath(outputDirectory+"/"+os.path.basename(file)))
+        print("Output: " + bcolors.OKGREEN + os.path.normpath(outputDirectory+"/"+os.path.basename(file)) + bcolors.ENDC)
         os.chdir(prePWD)
         removeTemporaryFolder("flatten_contracts")
         return 
@@ -53,7 +53,7 @@ def flattenSolidityFolder(sourcePath, interfacesPath, outputDirectory):
             outputPath = os.path.join(outputDirectory, relativePath) + "/"
             os.makedirs(outputPath, exist_ok=True)
             flattenSolidityFile(root+"/"+file, outputPath+file)
-            print("Output: ", os.path.normpath(outputPath+file))
+            print("Output: " + bcolors.OKGREEN + os.path.normpath(outputPath+file) + bcolors.ENDC)
     os.chdir(prePWD)
     removeTemporaryFolder("flatten_contracts")
     return 
