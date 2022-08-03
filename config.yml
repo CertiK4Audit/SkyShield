@@ -6,7 +6,7 @@ contractAddress: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
 function: balanceOf('0x88a69b4e698a4b090df6cf5bd7b2d47325ad30a3')
 networks:
   bsc:
-    url: https://nd-615-585-235.p2pify.com/b4998084582e65fec3eb93545a6a8deb
+    url: https://spring-empty-field.bsc.discover.quiknode.pro/a3c42e4b25fe985fe3654add8b5bb8c18dde2c43/
   eth:
     url: https://wandering-proud-bush.discover.quiknode.pro/17bf7e4b0bdbf9d31aa1495bb66b1430aacde04d/
 param: null
@@ -17,4 +17,4 @@ scanAPI:
   eth:
     key: D1AAFPR92TDP4FX57FR4ZZFX9HYPMD4M73
     url: https://api.etherscan.io/
-url: https://wandering-proud-bush.discover.quiknode.pro/17bf7e4b0bdbf9d31aa1495bb66b1430aacde04d/
+url: https://spring-empty-field.bsc.discover.quiknode.pro/a3c42e4b25fe985fe3654add8b5bb8c18dde2c43/
